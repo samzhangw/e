@@ -65,7 +65,7 @@ def signin():
     name = request.form['name']
     password = request.form['password']
     if city.sign_in(name, password):
-        return redirect("https://www.youtube.com")
+        return redirect(url_for('success', username=name))
     else:
         # 檢查用戶是否存在，如果不存在則顯示未註冊的錯誤訊息
         with sqlite3.connect("users.db") as conn:
@@ -90,7 +90,7 @@ def change_password():
 
 @app.route('/success/<username>')
 def success(username):
-    return render_template('ｗｗ.html', username=username)
+    return render_template('welcome.html', username=username)
 
 if __name__ == "__main__":
     app.run(debug=True)
