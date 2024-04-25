@@ -1,3 +1,6 @@
+const express = require('express')
+const app = express()
+const port = process.env.PORT || 4000;
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 import hashlib
 import sqlite3
