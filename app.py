@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
-from werkzeug.urls import quote
 import hashlib
 import sqlite3
+from urllib.parse import quote
 
 app = Flask(__name__)
 
