@@ -1,0 +1,5 @@
+services:
+  - name: web
+    env: python3
+    start_command: gunicorn -b 0.0.0.0:$PORT your_app:app
+    port: 8080
