@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
+from werkzeug.urls import quote
 import hashlib
 import sqlite3
 
@@ -65,7 +66,7 @@ def signin():
     name = request.form['name']
     password = request.form['password']
     if city.sign_in(name, password):
-        return redirect(url_for('success', username=name))
+        return redirect(url_for('success', username=quote(name)))
     else:
         # 檢查用戶是否存在，如果不存在則顯示未註冊的錯誤訊息
         with sqlite3.connect("users.db") as conn:
