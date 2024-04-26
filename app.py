@@ -51,7 +51,7 @@ def index():
 def signup():
     name = request.form['name']
     password = request.form['password']
-    # 檢查用戶是否已經存在
+    # Check if the user already exists
     with sqlite3.connect("users.db") as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users WHERE name = ?", (name,))
@@ -68,7 +68,7 @@ def signin():
     if city.sign_in(name, password):
         return redirect(url_for('success', username=quote(name)))
     else:
-        # 檢查用戶是否存在，如果不存在則顯示未註冊的錯誤訊息
+        # Check if the user exists and display appropriate error message if not
         with sqlite3.connect("users.db") as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM users WHERE name = ?", (name,))
