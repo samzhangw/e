@@ -23,15 +23,11 @@ class City:
             cursor.execute("SELECT * FROM users WHERE name = ? AND password = ?", (name, hashed_password))
             return cursor.fetchone() is not None
 
-    def change_password(self, name, old_password, new_password):
-        if self.sign_in(name, old_password):
-            hashed_new_password = self._hash_password(new_password)
-            with sqlite3.connect(self.db_name) as conn:
-                cursor = conn.cursor()
-                cursor.execute("UPDATE users SET password = ? WHERE name = ?", (hashed_new_password, name))
-                conn.commit()
-            return True
-        return False
+    def get_user_scores(self, name):
+        with sqlite3.connect(self.db_name) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM scores WHERE user = ?", (name,))
+            return cursor.fetchall()
 
     def _hash_password(self, password):
         return hashlib.sha256(password.encode()).hexdigest()
@@ -42,6 +38,7 @@ city = City("users.db")
 with sqlite3.connect("users.db") as conn:
     cursor = conn.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS users (name TEXT PRIMARY KEY, password TEXT)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS scores (id INTEGER PRIMARY KEY, user TEXT, subject TEXT, score INTEGER)")
 
 @app.route('/')
 def index():
@@ -66,7 +63,7 @@ def signin():
     name = request.form['name']
     password = request.form['password']
     if city.sign_in(name, password):
-        return redirect(url_for('success', username=quote(name)))
+        return redirect(url_for('user_scores', username=quote(name)))
     else:
         # Check if the user exists and display appropriate error message if not
         with sqlite3.connect("users.db") as conn:
@@ -90,8 +87,9 @@ def change_password():
         return jsonify({'status': 'error', 'message': '無效的名稱或密碼。密碼更新失敗。'})
 
 @app.route('/success/<username>')
-def success(username):
-    return render_template('welcome.html', username=username)
+def user_scores(username):
+    scores = city.get_user_scores(username)
+    return render_template('scores.html', username=username, scores=scores)
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=4000)
